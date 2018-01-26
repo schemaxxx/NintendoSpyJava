@@ -15,7 +15,9 @@ import java.util.List;
 public class SerialListener implements SerialPortEventListener {
 	SerialPort serialPort;
 	/** The port we're normally going to use. */
-	private static final String PORT_NAMES[] = { "/dev/tty.usbserial-A9007UX1", // MacOSX
+	private static final String PORT_NAMES[] = { 
+			"/dev/tty.usbserial-A9007UX1", // MacOSX
+			"/dev/tty.usbmodem621",
 			"/dev/ttyACM0", // Raspberry Pi
 			"/dev/ttyUSB0", // Linux
 			"COM1", // Windows
@@ -106,7 +108,9 @@ public class SerialListener implements SerialPortEventListener {
 				while (input.available() > 0) {
 					read.add(input.read());
 				}
-				int firstSplitIndex = -1;
+				int firstSplitIndex;
+				do{
+				 firstSplitIndex = -1;
 				for (int i = 0; i < read.size(); i++) {
 					if (read.get(i).intValue() == split) {
 						firstSplitIndex = i;
@@ -146,6 +150,7 @@ public class SerialListener implements SerialPortEventListener {
 				for (int i = 0; i < sndSplitIndex; i++) {
 					read.remove(0);
 				}
+				}while(firstSplitIndex >= 0);
 //				String inputLine = input.readLine();
 //				System.out.println(inputLine);
 			} catch (Exception e) {
@@ -155,10 +160,13 @@ public class SerialListener implements SerialPortEventListener {
 		// Ignore all the other eventTypes, but you should consider the other
 		// ones.
 	}
-
+	int oCh = 0;
 	private void packetReceived(int[] pack) {
 		ControllerState readPacketButtons = reader.readPacketButtons(pack);
+		if(oCh%10 == 0)
 		System.err.println("READ; "+pack.length+": "+readPacketButtons);
+		
+		oCh++;
 	}
 
 }

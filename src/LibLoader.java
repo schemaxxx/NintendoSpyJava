@@ -1,6 +1,7 @@
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.StringTokenizer;
 
 
 public class LibLoader {
@@ -17,7 +18,7 @@ public class LibLoader {
 				return;
 			}
 		}
-
+		System.err.println("add path "+s);
 		final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
 		newPaths[newPaths.length - 1] = s;
 		usrPathsField.set(null, newPaths);
@@ -38,9 +39,16 @@ public class LibLoader {
 			append = File.separator + "32" + File.separator;
 		}
 		if (System.getProperty("os.name").equals("Mac OS X")) {
+			addLibraryPath(NATIVE_LIB_PATH + "mac");
+			File f = new File(NATIVE_LIB_PATH + "mac/librxtxSerial.jnilib");
+			String property = System.getProperty("java.library.path");
+			StringTokenizer parser = new StringTokenizer(property, ";");
+			while (parser.hasMoreTokens()) {
+			    System.err.println(parser.nextToken());
+			    }
 			//mac doesent have x64/x86 libs
-			System.out.println("[LIBLOADER] LOADED MacOS NATIVE LIBRARIES ");
-			System.loadLibrary("librxtxSerial");
+			System.out.println("[LIBLOADER] LOADED MacOS NATIVE LIBRARIES "+f.getAbsolutePath());
+			System.load(f.getAbsolutePath());
 		} else if (System.getProperty("os.name").contains("Linux")) {
 			throw new RuntimeException("linux currently not supported");
 			
