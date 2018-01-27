@@ -100,7 +100,9 @@ public class SerialListener extends Observable implements SerialPortEventListene
 	 */
 	public synchronized void close() {
 		if (serialPort != null) {
-			serialPort.removeEventListener();
+			if (!System.getProperty("os.name").equals("Mac OS X")) {
+				serialPort.removeEventListener();
+			}
 			serialPort.close();
 			System.out.println("Serial Port closed: "+serialPort.getName());
 		}
